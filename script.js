@@ -63,22 +63,46 @@ const URL_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSFcZvN6VTdHBll
     }
 
     // Actualizar stock en Google Sheets
-    function descontarStock(nombre, cantidad) {
+   function descontarStock(nombre, cantidad) {
   fetch(URL_SCRIPT, {
     method: "POST",
-    body: JSON.stringify({ nombre, cantidad }),
-    headers: { "Content-Type": "application/json" }
+    body: JSON.stringify({ nombre: nombre, cantidad: Number(cantidad) })
   })
-  .then(res => res.text())
-  .then(msg => {
-    console.log(msg);
-    alert("✅ Stock actualizado correctamente");
+  .then(res => res.json()) // Ahora Apps Script devuelve JSON válido
+  .then(data => {
+    console.log("Respuesta del servidor:", data);
+    if (data.status === "ok") {
+      // Mostramos alerta con el stock actualizado
+      alert(`✅ Stock actualizado para ${nombre}. Nuevo stock: ${data.nuevoStock}`);
+      
+      // Opcional: actualizar visualmente el input de cantidad máximo en la página
+      const inputCantidad = document.querySelector(`#cant${getIndexProducto(nombre)}`);
+      if (inputCantidad) {
+        inputCantidad.max = data.nuevoStock;
+        if (Number(inputCantidad.value) > data.nuevoStock) {
+          inputCantidad.value = data.nuevoStock;
+        }
+      }
+    } else {
+      alert(`❌ Error al actualizar stock: ${data.message}`);
+    }
   })
   .catch(err => {
     console.error("Error al actualizar stock:", err);
-    alert("❌ Error al actualizar stock");
+    alert("❌ No se pudo actualizar el stock. Revisa la consola.");
   });
 }
+
+// Función auxiliar para obtener el índice del producto según su nombre
+function getIndexProducto(nombre) {
+  for (let i = 0; i < productos.length; i++) {
+    if (productos[i].nombre.trim().toLowerCase() === nombre.trim().toLowerCase()) {
+      return i;
+    }
+  }
+  return -1;
+}
+
 
 
     // Enviar por WhatsApp
@@ -92,7 +116,9 @@ const URL_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSFcZvN6VTdHBll
           descontarStock(p.nombre, parseInt(cantidad.value)); // 👈 actualiza el stock
         }
       });
+
       mensaje += `%0A*Total:* $${total.toLocaleString("es-AR")}`;
       const url = `https://wa.me/?text=${mensaje}`;
       window.open(url, "_blank");
     });
+    
