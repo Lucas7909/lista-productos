@@ -1,10 +1,10 @@
 // Lista de productos
 const productos = [
-  { nombre: "Auto de carrera", precio: 4000 },
-  { nombre: "Muñeca articulada", precio: 2500 },
-  { nombre: "Bloques de construcción", precio: 3200 },
-  { nombre: "Pelota saltarina", precio: 1800 },
-  { nombre: "Set de dinosaurios", precio: 2900 },
+  { nombre: "Lata de tomate", precio: 1000 },
+  { nombre: "Fideos largos", precio: 1500 },
+  { nombre: "Harina", precio: 1300 },
+  { nombre: "Detergente", precio: 1800 },
+  { nombre: "Arroz integral", precio: 1700 },
 ];
 
 const contenedor = document.getElementById("productos");
@@ -48,7 +48,7 @@ function calcularTotal() {
 }
 
 btnWhatsapp.addEventListener("click", () => {
-  let mensaje = "🧸 *Pedido El Corsario Toys*%0A%0A";
+  let mensaje = "📋 *Pedido Despensa Tentación*%0A%0A";
   productos.forEach((p, i) => {
     const checkbox = document.getElementById(`prod${i}`);
     const cantidad = document.getElementById(`cant${i}`);
